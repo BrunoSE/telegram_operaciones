@@ -1095,7 +1095,8 @@ def consultar_numero_ultimas_transmisiones():
                      "tiempo_detenido, idwebservice FROM ultimas_transmisiones;")
 
         datos = [row for row in cur1.fetchall() if len(row) == 12 and row[1] is not None]
-        mensaje_telegram = "Hay %d registros en la tabla ultimas_transmisiones" % len(datos)
+        mensaje_telegram = ("Hay " + str(len(datos)) + " registros en la tabla " +
+                           "ultimas_transmisiones")
         print(mensaje_telegram)
 
         mensaje_ultima_query_arreglo[numero_de_funcion_query] = mensaje_telegram
@@ -1132,7 +1133,8 @@ def consultar_numero_ultimas_transmisiones_maipu():
                      "tiempo_detenido, idwebservice FROM ultimas_transmisiones_c;")
 
         datos = [row for row in cur1.fetchall() if len(row) == 12 and row[1] is not None]
-        mensaje_telegram = "Hay %d registros en la tabla ultimas_transmisiones" % len(datos)
+        mensaje_telegram = ("Hay " + str(len(datos)) + " registros en la tabla " +
+                           "ultimas_transmisiones_c (maipu)")
         print(mensaje_telegram)
 
         mensaje_ultima_query_arreglo[numero_de_funcion_query] = mensaje_telegram
@@ -1697,8 +1699,8 @@ def main():
     dispatcher.add_handler(CommandHandler('uGPS_10', uGPS_10))
     dispatcher.add_handler(CommandHandler('patentes_maipu', patentes_maipu))
 
-    dispatcher.add_handler(CommandHandler('n_registros', patentes_maipu))
-    dispatcher.add_handler(CommandHandler('n_registros_maipu', patentes_maipu))
+    dispatcher.add_handler(CommandHandler('n_registros', n_registros))
+    dispatcher.add_handler(CommandHandler('n_registros_maipu', n_registros_maipu))
 
     dispatcher.add_handler(CommandHandler('anexo3', anexo3, pass_args=True))
     dispatcher.add_handler(CommandHandler('donde', donde, pass_args=True))
