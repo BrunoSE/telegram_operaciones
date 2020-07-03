@@ -18,5 +18,9 @@ pip install mysqlclient\
 pip install psycopg2\
 pip install folium\
 pip install geopy\
-
+ \
+fts104_10metros_modificado_contiempo.json\
+lista_acceso.json\
+Anexo 3 en excel\
+ \
 Una llave o Token que se obtuvo pidiendola dentro de la aplicación de telegram mandando un mensaje a la cuenta @BotFather
