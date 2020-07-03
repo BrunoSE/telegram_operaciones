@@ -10,7 +10,7 @@ import pandas as pd
 from telegram.ext import Updater, CommandHandler, MessageHandler
 import warnings  # para que ubuntu no arroje error
 testeo = False  # si se ocupara bot de prueba o no
-n_version = "9.1"
+n_version = "9.2"
 ip_webservice = "192.168.11.199"
 ip_bd_edu = "192.168.11.150"
 
@@ -77,7 +77,7 @@ global mensaje_ultima_query_arreglo
 global primera_query_arreglo
 
 # aumentar este numero a medida que se agregan nuevas funciones
-cantidad_de_funciones_query = 4
+cantidad_de_funciones_query = 6
 
 ahora_ultima_query_arreglo = []
 mensaje_ultima_query_arreglo = []
@@ -1068,6 +1068,80 @@ def consultar_patentes_ultima_transmision_maipu():
         return "-" + mensaje_ultima_query_arreglo[numero_de_funcion_query]
 
 
+def consultar_numero_ultimas_transmisiones():
+    numero_de_funcion_query = 4
+    global ahora_ultima_query_arreglo
+    global mensaje_ultima_query_arreglo
+    global primera_query_arreglo
+
+    ahora = dt.datetime.now().replace(microsecond=0)
+    delta_query = dt.timedelta(seconds=1)
+
+    if ahora > ahora_ultima_query_arreglo[numero_de_funcion_query]:
+        delta_query = ahora - ahora_ultima_query_arreglo[numero_de_funcion_query]
+
+    if delta_query > criterio_spam_rorro or primera_query_arreglo[numero_de_funcion_query]:
+        primera_query_arreglo[numero_de_funcion_query] = False
+        ahora_ultima_query_arreglo[numero_de_funcion_query] = ahora
+
+        db1 = MySQLdb.connect(host=ip_bd_edu,
+                              user="brunom",
+                              passwd="Manzana",
+                              db="repositorios")
+
+        cur1 = db1.cursor()
+        cur1.execute("SELECT patente, latitudgps, longitudgps, servicio, sentido, fecha, hora, " +
+                     "servicio_sentido_a_bordo_del_bus, estado, velocidad_instantanea_del_bus, " +
+                     "tiempo_detenido, idwebservice FROM ultimas_transmisiones;")
+
+        datos = [row for row in cur1.fetchall() if len(row) == 12 and row[1] is not None]
+        mensaje_telegram = "Hay %d registros en la tabla ultimas_transmisiones" % len(datos)
+        print(mensaje_telegram)
+
+        mensaje_ultima_query_arreglo[numero_de_funcion_query] = mensaje_telegram
+        return mensaje_ultima_query_arreglo[numero_de_funcion_query]
+
+    else:
+        return "-" + mensaje_ultima_query_arreglo[numero_de_funcion_query]
+
+
+def consultar_numero_ultimas_transmisiones_maipu():
+    numero_de_funcion_query = 5
+    global ahora_ultima_query_arreglo
+    global mensaje_ultima_query_arreglo
+    global primera_query_arreglo
+
+    ahora = dt.datetime.now().replace(microsecond=0)
+    delta_query = dt.timedelta(seconds=1)
+
+    if ahora > ahora_ultima_query_arreglo[numero_de_funcion_query]:
+        delta_query = ahora - ahora_ultima_query_arreglo[numero_de_funcion_query]
+
+    if delta_query > criterio_spam_rorro or primera_query_arreglo[numero_de_funcion_query]:
+        primera_query_arreglo[numero_de_funcion_query] = False
+        ahora_ultima_query_arreglo[numero_de_funcion_query] = ahora
+
+        db1 = MySQLdb.connect(host=ip_bd_edu,
+                              user="brunom",
+                              passwd="Manzana",
+                              db="repositorios")
+
+        cur1 = db1.cursor()
+        cur1.execute("SELECT patente, latitudgps, longitudgps, servicio, sentido, fecha, hora, " +
+                     "servicio_sentido_a_bordo_del_bus, estado, velocidad_instantanea_del_bus, " +
+                     "tiempo_detenido, idwebservice FROM ultimas_transmisiones_c;")
+
+        datos = [row for row in cur1.fetchall() if len(row) == 12 and row[1] is not None]
+        mensaje_telegram = "Hay %d registros en la tabla ultimas_transmisiones" % len(datos)
+        print(mensaje_telegram)
+
+        mensaje_ultima_query_arreglo[numero_de_funcion_query] = mensaje_telegram
+        return mensaje_ultima_query_arreglo[numero_de_funcion_query]
+
+    else:
+        return "-" + mensaje_ultima_query_arreglo[numero_de_funcion_query]
+
+
 def consultar_anexo3(servicio="F01", sentido="Ida", tipo_dia="Laboral", periodo="ts"):
     mensaje_telegram = ""
 
@@ -1255,6 +1329,8 @@ def start(bot, update):
 
 
 def ayuda(bot, update):
+    print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+           str(update.effective_user.id) + ": /ayuda"))
     if str(update.effective_user.id) in lista_acceso_dic:
         bot.send_message(chat_id=update.message.chat_id,
                          text=("Este bot (version " + n_version +
@@ -1305,12 +1381,14 @@ def comandos(bot, update):
                                     "/uGPS_Electricos\n/uGPS_10\n/anexo3\n/donde\n" +
                                     "/Rorro\n/Pato\n/Cerdo\n/reset_accesos .\n" +
                                     "/guardar_accesos .\n/manzana roja\n/orden66\n/stop\n" +
-                                    "/ayuda_nuevo_acceso\n/patentes_maipu\n/donde_maipu"))
+                                    "/patentes_maipu\n/donde_maipu\n" +
+                                    "/ayuda\n/ayuda_nuevo_acceso"))
         else:
             bot.send_message(chat_id=update.message.chat_id,
                              text=("/comandos\n/version\n/f94_104\n/busesLL\n/busesEP\n" +
                                     "/uGPS_Electricos\n/uGPS_10\n/anexo3\n/donde\n" +
-                                    "/patentes_maipu\n/donde_maipu"))
+                                    "/donde_maipu\n/patentes_maipu\n" +
+                                    "/ayuda"))
     else:
         bot.send_message(chat_id=update.message.chat_id, text="Acceso denegado.")
 
@@ -1393,6 +1471,24 @@ def patentes_maipu(bot, update):
         bot.send_message(chat_id=update.message.chat_id, text="Acceso denegado.")
 
 
+def n_registros(bot, update):
+    if str(update.effective_user.id) in lista_acceso_dic:
+        bot.send_message(chat_id=update.message.chat_id, text="Consultando base de datos..")
+        mensaje_a_enviar = consultar_numero_ultimas_transmisiones()
+        bot.send_message(chat_id=update.message.chat_id, text=mensaje_a_enviar)
+    else:
+        bot.send_message(chat_id=update.message.chat_id, text="Acceso denegado.")
+
+
+def n_registros_maipu(bot, update):
+    if str(update.effective_user.id) in lista_acceso_dic:
+        bot.send_message(chat_id=update.message.chat_id, text="Consultando base de datos..")
+        mensaje_a_enviar = consultar_numero_ultimas_transmisiones_maipu()
+        bot.send_message(chat_id=update.message.chat_id, text=mensaje_a_enviar)
+    else:
+        bot.send_message(chat_id=update.message.chat_id, text="Acceso denegado.")
+
+
 def anexo3(bot, update, args):
     if str(update.effective_user.id) in lista_acceso_dic:
         args_procesado = procesar_argumento_comando_anexo3(args)
@@ -1409,6 +1505,8 @@ def anexo3(bot, update, args):
 def donde(bot, update, args):
     if str(update.effective_user.id) in lista_acceso_dic:
         if args:
+            print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+                   str(update.effective_user.id) + ": /donde " + args[0]))
             if len(args[0].strip()) == 6:
                 latlon_consulta = consultar_donde_esta_ppu(args[0].strip().upper())
                 if latlon_consulta:
@@ -1435,6 +1533,8 @@ def donde(bot, update, args):
 def donde_maipu(bot, update, args):
     if str(update.effective_user.id) in lista_acceso_dic:
         if args:
+            print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+                   str(update.effective_user.id) + ": /donde_maipu " + args[0]))
             if len(args[0].strip()) == 6:
                 latlon_consulta = consultar_donde_esta_ppu_maipu(args[0].strip().upper())
                 if latlon_consulta:
@@ -1596,6 +1696,9 @@ def main():
     dispatcher.add_handler(CommandHandler('uGPS_Electricos', uGPS_Electricos))
     dispatcher.add_handler(CommandHandler('uGPS_10', uGPS_10))
     dispatcher.add_handler(CommandHandler('patentes_maipu', patentes_maipu))
+
+    dispatcher.add_handler(CommandHandler('n_registros', patentes_maipu))
+    dispatcher.add_handler(CommandHandler('n_registros_maipu', patentes_maipu))
 
     dispatcher.add_handler(CommandHandler('anexo3', anexo3, pass_args=True))
     dispatcher.add_handler(CommandHandler('donde', donde, pass_args=True))
