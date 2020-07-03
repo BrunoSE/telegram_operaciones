@@ -28,7 +28,7 @@ infile = open('fts104_10metros_modificado_contiempo.json', 'r')
 ruta_fts104_10metros = json.load(infile)
 infile.close()
 
-nombre_archivo_anexo3 = 'PO 2019(06Jul al 31Dic) UN7 - Anexo 3_rectificado.xlsx'
+nombre_archivo_anexo3 = 'PO 2020(27Jun al 31Dic) UN7 - Anexo 3.xlsx'
 Anexo3 = pd.read_excel(nombre_archivo_anexo3, skiprows=6)
 
 servicios_STP = Anexo3['Código TS'].unique().tolist()
