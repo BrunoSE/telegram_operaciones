@@ -10,7 +10,7 @@ import pandas as pd
 from telegram.ext import Updater, CommandHandler, MessageHandler
 import warnings  # para que ubuntu no arroje error
 testeo = False  # si se ocupara bot de prueba o no
-n_version = "9.2"
+n_version = "9.3"
 ip_webservice = "192.168.11.199"
 ip_bd_edu = "192.168.11.150"
 
@@ -1331,9 +1331,9 @@ def start(bot, update):
 
 
 def ayuda(bot, update):
-    print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
-           str(update.effective_user.id) + ": /ayuda"))
     if str(update.effective_user.id) in lista_acceso_dic:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+               lista_acceso_dic[str(update.effective_user.id)] + ": /ayuda"))
         bot.send_message(chat_id=update.message.chat_id,
                          text=("Este bot (version " + n_version +
                          ") toma datos GPS y del planillón online para entregar información en " +
@@ -1370,6 +1370,8 @@ def ayuda(bot, update):
                             "ejemplo /donde BBZX38"))
 
     else:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+               str(update.effective_user.id) + ": /ayuda (unauthorized)"))
         bot.send_message(chat_id=update.message.chat_id,
                          text=("No tienes permiso para usar el bot, habla con alguien de " +
                                "Operaciones para pedir ayuda sobre cómo tener acceso."))
@@ -1508,7 +1510,7 @@ def donde(bot, update, args):
     if str(update.effective_user.id) in lista_acceso_dic:
         if args:
             print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
-                   str(update.effective_user.id) + ": /donde " + args[0]))
+                   lista_acceso_dic[str(update.effective_user.id)] + ": /donde " + args[0]))
             if len(args[0].strip()) == 6:
                 latlon_consulta = consultar_donde_esta_ppu(args[0].strip().upper())
                 if latlon_consulta:
@@ -1519,7 +1521,9 @@ def donde(bot, update, args):
                 else:
                     bot.send_message(chat_id=update.message.chat_id,
                                      text=("No se encontró la PPU " + args[0].strip().upper() +
-                                          " quizá la PPU no existe o falló la conexión"))
+                                          " quizá la PPU no existe, falló la conexión o es " +
+                                          "una PPU del terminal de maipú, en el última caso " +
+                                          "probar con comando /donde_maipu"))
             else:
                 bot.send_message(chat_id=update.message.chat_id,
                                  text=("Tiene que ser una ppu sin guiones, " +
@@ -1536,7 +1540,8 @@ def donde_maipu(bot, update, args):
     if str(update.effective_user.id) in lista_acceso_dic:
         if args:
             print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
-                   str(update.effective_user.id) + ": /donde_maipu " + args[0]))
+                   lista_acceso_dic[str(update.effective_user.id)] + ": /donde_maipu " +
+                   args[0]))
             if len(args[0].strip()) == 6:
                 latlon_consulta = consultar_donde_esta_ppu_maipu(args[0].strip().upper())
                 if latlon_consulta:
@@ -1626,17 +1631,17 @@ def guardar_accesos(bot, update, args):
 def manzana(bot, update, args):
     if args:
         if args[0].strip().lower() == "roja":
-            if str(update.effective_user.id) in lista_acceso_dic:
-                bot.send_message(chat_id=update.message.chat_id, text="Oh a ti te conozco")
-                bot.send_message(chat_id=update.message.chat_id,
-                                 text=("Hola " + lista_acceso_dic[str(update.effective_user.id)] +
-                                       " voy a intentar cambiar tu nombre.."))
-            else:
-                bot.send_message(chat_id=update.message.chat_id,
-                                 text="No te conocía, agregando a lista de acceso..")
-                lista_acceso_dic[str(update.effective_user.id)] = ""
-
             if len(args) > 1:
+                if str(update.effective_user.id) in lista_acceso_dic:
+                    bot.send_message(chat_id=update.message.chat_id,
+                                     text="Ya te conocía con otro nombre: " +
+                                          lista_acceso_dic[str(update.effective_user.id)])
+                    bot.send_message(chat_id=update.message.chat_id,
+                                     text=("Voy a intentar cambiar tu nombre de mi registro.."))
+                elif len(args) > 1:
+                    bot.send_message(chat_id=update.message.chat_id,
+                                     text="No te conocía, te agregaré a mi registro de usuarios " +
+                                          "con el nombre que me has proporcionado..")
                 if len(args) < 7:
                     argumentos = ""
                     for arg in args[1:]:
@@ -1650,15 +1655,22 @@ def manzana(bot, update, args):
                     else:
                         bot.send_message(chat_id=update.message.chat_id,
                                          text=("No te agregué con el nombre dado, " +
-                                              "debes poner menos de 60 caracteres"))
+                                              "debes ingresar menos de 60 caracteres"))
                 else:
                     bot.send_message(chat_id=update.message.chat_id,
                                      text=("No te agregué con el nombre dado, " +
-                                          "debes poner menos de 6 palabras"))
+                                          "debes ingresar máximo 6 palabras"))
             else:
                 bot.send_message(chat_id=update.message.chat_id,
-                                 text=("Te agregué aunque no me diste ningún nombre, " +
-                                      "si quieres intenta de nuevo con\n/manzana roja Nombre"))
+                                 text=("No has proporcionado ningún nombre, " +
+                                       "si quieres intenta de nuevo con\n/manzana roja algun_nombre"))
+
+    if str(update.effective_user.id) in lista_acceso_dic:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+                lista_acceso_dic[str(update.effective_user.id)] + ": /manzana"))
+    else:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+                str(update.effective_user.id) + ": /manzana"))
 
 
 def shutdown():
@@ -1669,6 +1681,9 @@ def shutdown():
 
 def stop(bot, update):
     if str(update.effective_user.id) in lista_acceso_dic:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+                lista_acceso_dic[str(update.effective_user.id)] + ": /stop "))
+
         if seguro_telegramearlyexit:
             threading.Thread(target=shutdown).start()
     else:
