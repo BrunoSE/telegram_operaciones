@@ -140,10 +140,10 @@ updater = Updater(token=TOKEN, use_context=False)
 def sacar_tiempo_restante_macul(tiempo_mediahora, d, indice_min):
     if indice_min <= 176:
         return (((d[indice_min] - d[176]) / (d[0] - d[176])) * tiempo_mediahora[0] +
-                  tiempo_mediahora[1] + tiempo_mediahora[2])
+                tiempo_mediahora[1] + tiempo_mediahora[2])
     elif indice_min <= 614:
         return (((d[indice_min] - d[614]) / (d[176] - d[614])) * tiempo_mediahora[1] +
-                  tiempo_mediahora[2])
+                tiempo_mediahora[2])
     else:
         return tiempo_mediahora[2] * d[indice_min] / d[614]
 
@@ -255,7 +255,7 @@ def ajustar_pulsos_a_ruta2(pulso, ruta_macul, ruta_vesp):
 def ubicacion(p):
 
     if (p[1] >= -33.580831373999935 and p[1] <= -33.576390815942794 and
-         p[2] >= -70.55463834229224 and p[2] <= -70.54917176737295):
+       p[2] >= -70.55463834229224 and p[2] <= -70.54917176737295):
         return "Cabezal Penon"
     elif (p[1] >= -33.465386618998956 and p[1] <= -33.46095232045423 and
           p[2] >= -70.69815575321851 and p[2] <= -70.6926896346114):
@@ -324,9 +324,9 @@ def geocerca_ElPenonDetenido_romboideX(p):
        (p[0] < eq_geocerca_penon1_romboide[3])):
         return True
     elif ((p[0] - eq_geocerca_penon2_romboide[0] * p[1] - eq_geocerca_penon2_romboide[1] > 0) &
-         (p[0] - eq_geocerca_penon2_romboide[0] * p[1] - eq_geocerca_penon2_romboide[1] <
-         -1.0 * eq_geocerca_penon2_romboide[0] * 0.15) & (p[0] > eq_geocerca_penon2_romboide[2]) &
-         (p[0] < eq_geocerca_penon2_romboide[3])):
+          (p[0] - eq_geocerca_penon2_romboide[0] * p[1] - eq_geocerca_penon2_romboide[1] <
+          -1.0 * eq_geocerca_penon2_romboide[0] * 0.15) & (p[0] > eq_geocerca_penon2_romboide[2]) &
+          (p[0] < eq_geocerca_penon2_romboide[3])):
         return True
     else:
         return False
@@ -335,7 +335,7 @@ def geocerca_ElPenonDetenido_romboideX(p):
 # determina si un punto esta dentro de geocerca los leones
 def geocerca_LosLeonesDetenido_romboideX(p):
     if ((p[0] - eq_geocerca_losleones1_romboide[0] * p[1] -
-                eq_geocerca_losleones1_romboide[1] < 0) &
+        eq_geocerca_losleones1_romboide[1] < 0) &
        (p[0] - eq_geocerca_losleones1_romboide[0] * p[1] - eq_geocerca_losleones1_romboide[1] >
        -1.0 * eq_geocerca_losleones1_romboide[0] * 0.15) &
        (p[0] > eq_geocerca_losleones1_romboide[2]) &
@@ -392,10 +392,10 @@ def dibujar_cabezal(df_aux, nombre_cabezal):
     for i in df_aux.index:
 
         popup_aux = (df_aux.loc[i, 'PPU'] + " | " + df_aux.loc[i, 'hora'].strftime('%H:%M:%S') +
-                    " | " + diccionario_plaza_ppu[df_aux.loc[i, 'PPU']] + " | " +
-                    df_aux.loc[i, 'Detenido'])
+                     " | " + diccionario_plaza_ppu[df_aux.loc[i, 'PPU']] + " | " +
+                     df_aux.loc[i, 'Detenido'])
         folium.Marker([df_aux.loc[i, 'Lat'], df_aux.loc[i, 'Lon']],
-                       popup=popup_aux).add_to(grp_pulsos)
+                      popup=popup_aux).add_to(grp_pulsos)
 
     if nombre_cabezal == "LosLeones":
 
@@ -411,12 +411,12 @@ def dibujar_cabezal(df_aux, nombre_cabezal):
             coordenadas_geocerca_penon1[0], coordenadas_geocerca_penon1[1],
             eq_geocerca_penon1_romboide[0], 0.004 * 0.15)
         folium.Polygon(georcerca_penon1, fill=False, color="purple",
-                                         popup="PenonDetenido1").add_to(m)
+                       popup="PenonDetenido1").add_to(m)
         georcerca_penon2 = coordenadas_poligono_romboide_ejeX(
             coordenadas_geocerca_penon2[0], coordenadas_geocerca_penon2[1],
             eq_geocerca_penon2_romboide[0], 0.004 * 0.15)
         folium.Polygon(georcerca_penon2, fill=False, color="purple",
-                                         popup="PenonDetenido2").add_to(m)
+                       popup="PenonDetenido2").add_to(m)
 
     grp_pulsos.add_to(m)
     m.save('Buses' + nombre_cabezal + '.html')
@@ -484,9 +484,9 @@ def consultar_fts_104():
             df.drop_duplicates(subset=['PPU'], inplace=True)
             df['hora'] = pd.to_datetime(df['hora'])
             df['Media_hra'] = df.apply(lambda x:
-                                        x['hora'] - pd.Timedelta(minutes=(x['hora'].minute % 30),
-                                                                 seconds=x['hora'].second),
-                                                                 axis=1).dt.strftime("%H:%M")
+                                       x['hora'] - pd.Timedelta(minutes=(x['hora'].minute % 30),
+                                                                seconds=x['hora'].second),
+                                       axis=1).dt.strftime("%H:%M")
 
             # df['dX'] = 999
             # df.loc[df['Sentido_SSAB']=='R','dX'] = df.loc[df['Sentido_SSAB']=='R'].apply(
@@ -518,7 +518,7 @@ def consultar_fts_104():
                                         'Hora_Salida_Real_planillon', 'Servicio_planillon',
                                         'Sentido_planillon', 'Nombre_Conductor'])
             df_planillon['SS_planillon'] = (df_planillon['Servicio_planillon'] +
-                                           df_planillon['Sentido_planillon'])
+                                            df_planillon['Sentido_planillon'])
 
             df = df.merge(df_planillon, how='left', left_on=['PPU'], right_on=['PPU'])
             df = df.loc[(df['SS_planillon'].str[:-1] == 'F74') | (df['SS_planillon'].isnull())]
@@ -565,9 +565,9 @@ def consultar_fts_104():
             if len(df.index) == 1:
                 mensaje_telegram = "Hay 1 bus F94 hacia Los Leones, según planillon online:\n"
             else:
-                mensaje_telegram = ("Hay " +
-                    str(len(df.index)) + " buses F94 hacia Los Leones, según planillon online " +
-                    str(numero_fts_f74_planillon) + " son para 104:\n")
+                mensaje_telegram = ("Hay " + str(len(df.index)) +
+                                    " buses F94 hacia Los Leones, según planillon online " +
+                                    str(numero_fts_f74_planillon) + " son para 104:\n")
 
             mensaje_telegram = mensaje_telegram + "Patente | Plazas | Serv | Ruta | Minutos\n"
 
@@ -631,7 +631,7 @@ def consultar_buses_cabezal_LosLeones():
                          row[5], (dt.datetime.min + row[6]).time()) > ahora_delta and
                          ubicacion(row) == "Cabezal 104"]
         datos_cabezal = [[row[0], row[1], row[2], row[6], row[8], int(row[10])] for
-                          row in datos_cabezal]
+                         row in datos_cabezal]
 
         df = pd.DataFrame(datos_cabezal, columns=['PPU', 'Lat', 'Lon', 'hora',
                                                   'Estado', 'T_detenido'])
@@ -662,9 +662,9 @@ def consultar_buses_cabezal_LosLeones():
 
             for i in df.index:
                 mensaje_telegram = (mensaje_telegram + df.loc[i, 'PPU'] + "  |    " +
-                                   df.loc[i, 'hora'].strftime('%H:%M:%S') + "    |   " +
-                                   diccionario_plaza_ppu[df.loc[i, 'PPU']] + "  | " +
-                                   df.loc[i, 'Detenido'] + "\n")
+                                    df.loc[i, 'hora'].strftime('%H:%M:%S') + "    |   " +
+                                    diccionario_plaza_ppu[df.loc[i, 'PPU']] + "  | " +
+                                    df.loc[i, 'Detenido'] + "\n")
 
         cur1.close()
         db1.close()
@@ -744,9 +744,9 @@ def consultar_buses_cabezal_ElPenon():
 
             for i in df.index:
                 mensaje_telegram = (mensaje_telegram + df.loc[i, 'PPU'] + "  |    " +
-                                   df.loc[i, 'hora'].strftime('%H:%M:%S') + "    |   " +
-                                   diccionario_plaza_ppu[df.loc[i, 'PPU']] + "  | " +
-                                   df.loc[i, 'Detenido'] + "\n")
+                                    df.loc[i, 'hora'].strftime('%H:%M:%S') + "    |   " +
+                                    diccionario_plaza_ppu[df.loc[i, 'PPU']] + "  | " +
+                                    df.loc[i, 'Detenido'] + "\n")
 
         cur1.close()
         db1.close()
@@ -828,8 +828,8 @@ def consultar_rorro():
 
             mensaje_telegram = "Patente | Estado Ignicion | Hora\n"
             mensaje_telegram = (mensaje_telegram + df.loc[i, 'PPU'] + "  |  " +
-                               df.loc[i, 'estado_ignicion'] + "   | " +
-                               df.loc[i, 'hora'].strftime('%H:%M:%S') + "\n")
+                                df.loc[i, 'estado_ignicion'] + "   | " +
+                                df.loc[i, 'hora'].strftime('%H:%M:%S') + "\n")
 
             cur3.close()
             db3.close()
@@ -894,13 +894,13 @@ def consultar_ultima_transmision_10():
             df['hora'] = pd.to_datetime(df['hora'])
 
             mensaje_telegram = ("Se sacó una muestra de " + str(len(df.index)) +
-                               " buses entre las últimas transmisiones\n")
+                                " buses entre las últimas transmisiones\n")
             mensaje_telegram = mensaje_telegram + "Patente |   Hora   | Ubicación\n"
 
             for i in df.index:
                 mensaje_telegram = (mensaje_telegram + df.loc[i, 'PPU'] + " | " +
-                                   df.loc[i, 'hora'].strftime('%H:%M:%S') + " | " +
-                                   df.loc[i, 'ubicacion'] + "\n")
+                                    df.loc[i, 'hora'].strftime('%H:%M:%S') + " | " +
+                                    df.loc[i, 'ubicacion'] + "\n")
 
         cur1.close()
         db1.close()
@@ -982,13 +982,13 @@ def consultar_ultima_transmision_electricos():
             df.loc[df['ubicacion'] == 'c En Transito', 'ubicacion'] = 'EnTransito'
 
             mensaje_telegram = ("Se encontraron " + str(len(df.index)) +
-                               " buses eléctricos en las últimas transmisiones\n")
+                                " buses eléctricos en las últimas transmisiones\n")
             mensaje_telegram = mensaje_telegram + "Patente |   Hora   | SSAB | Ubicación \n"
 
             for i in df.index:
                 mensaje_telegram = (mensaje_telegram + df.loc[i, 'PPU'] + " | " +
-                                   df.loc[i, 'hora'].strftime('%H:%M:%S') + " | " +
-                                   df.loc[i, 'SS'] + " | " + df.loc[i, 'ubicacion'] + "\n")
+                                    df.loc[i, 'hora'].strftime('%H:%M:%S') + " | " +
+                                    df.loc[i, 'SS'] + " | " + df.loc[i, 'ubicacion'] + "\n")
 
         cur1.close()
         db1.close()
@@ -1047,7 +1047,7 @@ def consultar_patentes_ultima_transmision_maipu():
             df['hora'] = pd.to_datetime(df['hora'])
 
             mensaje_telegram = ("Hay " + str(len(df.index)) +
-                               " patentes distintas entre las últimas transmisiones\n")
+                                " patentes distintas entre las últimas transmisiones\n")
             mensaje_telegram = mensaje_telegram + "Iniciales Patente |  Conteo\n"
 
             df = df['PPU'].str[:2].value_counts()
@@ -1055,7 +1055,7 @@ def consultar_patentes_ultima_transmision_maipu():
             for ppu, x in df.iteritems():
                 mensaje_telegram = (mensaje_telegram + ppu +
                                     "                           |  " +
-                                   str(x) + "\n")
+                                    str(x) + "\n")
             mensaje_telegram = mensaje_telegram + 'Total                    |  ' + str(df.sum())
 
         cur1.close()
@@ -1096,7 +1096,7 @@ def consultar_numero_ultimas_transmisiones():
 
         datos = [row for row in cur1.fetchall() if len(row) == 12 and row[1] is not None]
         mensaje_telegram = ("Hay " + str(len(datos)) + " registros en la tabla " +
-                           "ultimas_transmisiones")
+                            "ultimas_transmisiones")
         print(mensaje_telegram)
 
         mensaje_ultima_query_arreglo[numero_de_funcion_query] = mensaje_telegram
@@ -1134,7 +1134,7 @@ def consultar_numero_ultimas_transmisiones_maipu():
 
         datos = [row for row in cur1.fetchall() if len(row) == 12 and row[1] is not None]
         mensaje_telegram = ("Hay " + str(len(datos)) + " registros en la tabla " +
-                           "ultimas_transmisiones_c (maipu)")
+                            "ultimas_transmisiones_c (maipu)")
         print(mensaje_telegram)
 
         mensaje_ultima_query_arreglo[numero_de_funcion_query] = mensaje_telegram
@@ -1160,7 +1160,7 @@ def consultar_anexo3(servicio="F01", sentido="Ida", tipo_dia="Laboral", periodo=
         tipo_dia = "Domingo"
 
     if (servicio in servicios_STP and sentido in ['Ida', 'Ret'] and
-         tipo_dia in ['Laboral', 'Sábado', 'Domingo'] and periodo in ['mh', 'ts']):
+       tipo_dia in ['Laboral', 'Sábado', 'Domingo'] and periodo in ['mh', 'ts']):
         mensaje_telegram = "Anexo 3 " + servicio + sentido[0] + " " + tipo_dia[:3] + "\n"
         query_anexo3 = Anexo3.loc[(Anexo3['Código TS'] == servicio) & (
             Anexo3['Sentido'] == sentido) & (Anexo3['Día'] == tipo_dia)]
@@ -1168,8 +1168,8 @@ def consultar_anexo3(servicio="F01", sentido="Ida", tipo_dia="Laboral", periodo=
             mensaje_telegram = mensaje_telegram + "MH | Salidas | Cap. Plazas\n"
             for q in query_anexo3.index:
                 mensaje_telegram = (mensaje_telegram + query_anexo3.loc[q, 'MH'].strftime('%H:%M') +
-                                   " |   " + str(query_anexo3.loc[q, 'N° Salidas']) + "     |  " +
-                                   str(query_anexo3.loc[q, 'Capacidad (plazas)']) + "\n")
+                                    " |   " + str(query_anexo3.loc[q, 'N° Salidas']) + "     |  " +
+                                    str(query_anexo3.loc[q, 'Capacidad (plazas)']) + "\n")
         else:
             mensaje_telegram = mensaje_telegram + "PeriodoTS | Salidas\n"
             query_anexo3_procesada = query_anexo3.groupby(['Periodo'])[
@@ -1207,11 +1207,11 @@ def consultar_anexo3(servicio="F01", sentido="Ida", tipo_dia="Laboral", periodo=
                                     "\n")
 
         mensaje_telegram = (mensaje_telegram + " \nTotal salidas:    " +
-                           str(query_anexo3['N° Salidas'].sum()) + "\n")
+                            str(query_anexo3['N° Salidas'].sum()) + "\n")
         mensaje_telegram = (mensaje_telegram + "Moda Distancia Base: " +
-                           str(query_anexo3['Distancia Base (Km)'].mode()[0]) + "\n")
+                            str(query_anexo3['Distancia Base (Km)'].mode()[0]) + "\n")
         mensaje_telegram = (mensaje_telegram + "Moda Distancia Total: " +
-                           str(query_anexo3['Distancia Total (POB+POI) (Km)'].mode()[0]))
+                            str(query_anexo3['Distancia Total (POB+POI) (Km)'].mode()[0]))
     else:
         mensaje_telegram = "No se consultó Anexo 3 ya que están malos los parámetros de la query"
 
@@ -1250,14 +1250,14 @@ def procesar_argumento_comando_anexo3(argumentos):
                             periodio_i = argumentos[3][:2].lower()
         else:
             interpretacion = ("Ese no me lo sabía, servicio tiene que estar con código " +
-                             "transantiago, ejemplos: F53e, F52N, F01c, F02")
+                              "transantiago, ejemplos: F53e, F52N, F01c, F02")
     else:
         interpretacion = ("Intentalo de nuevo. Escribe un servicio y alguna de las opciones en " +
-                         "paréntesis [ ]: /anexo3 codigo_servicio_TS [i,r] [l,s,d] [mh,ts]")
+                          "paréntesis [ ]: /anexo3 codigo_servicio_TS [i,r] [l,s,d] [mh,ts]")
 
     if servicio_i:
         interpretacion = ("Asumiendo que quisiste decir:\n /anexo3 " + servicio_i + " " +
-                         sentido_i + " " + tipo_dia_i + " " + periodio_i)
+                          sentido_i + " " + tipo_dia_i + " " + periodio_i)
 
     return [interpretacion, servicio_i, sentido_i, tipo_dia_i, periodio_i]
 
@@ -1311,9 +1311,9 @@ def consultar_donde_esta_ppu_maipu(ppu_q=""):
     if datos:
         datos = datos[0]
         mensaje_telegram = ("Columnas de última transmisión\n" + datos[3] + " " + datos[4] +
-                           " - " + str(datos[5]) + " " + str(datos[6]) + "\n" + datos[7] +
-                           " - " + datos[8] + "\n" + datos[9] + " - " + str(datos[10]) +
-                           "\n" + datos[11])
+                            " - " + str(datos[5]) + " " + str(datos[6]) + "\n" + datos[7] +
+                            " - " + datos[8] + "\n" + datos[9] + " - " + str(datos[10]) +
+                            "\n" + datos[11])
 
         return [float(datos[1]), float(datos[2]), mensaje_telegram]
     else:
@@ -1336,38 +1336,39 @@ def ayuda(bot, update):
                lista_acceso_dic[str(update.effective_user.id)] + ": /ayuda"))
         bot.send_message(chat_id=update.message.chat_id,
                          text=("Este bot (version " + n_version +
-                         ") toma datos GPS y del planillón online para entregar información en " +
-                         "tiempo real sobre los buses de STP, además puede entregar información " +
-                         "del Plan Operacional. Para consultar puedes enviar:\n" +
-                         "/comandos - enlista todos los comandos posibles\n" +
-                         "/version - dice qué versión del bot está siendo usada\n" +
-                         "/f94_104 - dice en cuantos minutos llegan los F94 hacia " +
-                            "metro Los Leones.En caso que un bus se encuentre fuera de " +
-                            "las dos rutas posibles, Vespucio-Tobalaba y Macul-Leones, " +
-                            "no se estima el tiempo y se pone 'FR'\n" +
-                         "/busesLL - dice cuantos buses se encuentran muy cerca del cabezal " +
-                            "Metro Los Leones y cuáles se encuentran detenidos\n" +
-                         "/busesEP - dice cuantos buses se encuentran muy cerca del cabezal " +
-                            "El Peñón y cuáles se encuentran detenidos\n" +
-                         "NOTA: En caso de que un bus no se ingresó al Planillón Online, " +
-                            "no se puede saber para cual servicio es el F94, de todas formas " +
-                            "se muestran estos buses con un 'NA' en la columna Servicio\n" +
-                         "/uGPS_Electricos - dice patentes de los 25 buses Electricos, la hora " +
-                            "de su última transmisión GPS y sus columnas " +
-                            "'servicio_sentido_a_bordo_del_bus' (abreviada) y " +
-                            "'Ubicación' del webservice\n" +
-                         "/uGPS_10 - dice patentes de 10 buses al azar, la hora de su última " +
-                            "transmisión GPS y su columna Ubicación del webservice\n" +
-                         "/patentes_maipu - dice cuantas iniciales de patentes hay transmitiendo " +
-                            "en la tabla de últimas transmisiones\n" +
-                         "/anexo3 - dice salidas según anexo 3, por ejemplo '/anexo3 F53e i l mh'" +
-                            " consulta salidas por media hora(mh) día laboral(l) sentido ida(i) " +
-                            "del F53e\n" +
-                         "/donde - dice donde está una PPU y entrega columnas webservice " +
-                            "(servicio-sentido-fecha-hora-SSAB-estado-ubicacion), " +
-                            "ejemplo /donde FLXT33\n" +
-                         "/donde_maipu - dice donde está una PPU del terminal de Maipú, " +
-                            "ejemplo /donde BBZX38"))
+                               ") toma datos GPS y del planillón online para entregar " +
+                               "información en tiempo real sobre los buses de STP, además puede " +
+                               "entregar información del Plan Operacional. " +
+                               "Para consultar puedes enviar:\n" +
+                               "/comandos - enlista todos los comandos posibles\n" +
+                               "/version - dice qué versión del bot está siendo usada\n" +
+                               "/f94_104 - dice en cuantos minutos llegan los F94 hacia " +
+                               "metro Los Leones.En caso que un bus se encuentre fuera de " +
+                               "las dos rutas posibles, Vespucio-Tobalaba y Macul-Leones, " +
+                               "no se estima el tiempo y se pone 'FR'\n" +
+                               "/busesLL - dice cuantos buses se encuentran muy cerca del " +
+                               "cabezal Metro Los Leones y cuáles se encuentran detenidos\n" +
+                               "/busesEP - dice cuantos buses se encuentran muy cerca del " +
+                               "cabezal El Peñón y cuáles se encuentran detenidos\n" +
+                               "NOTA: En caso de que un bus no se ingresó al Planillón Online, " +
+                               "no se puede saber para cual servicio es el F94, de todas formas " +
+                               "se muestran estos buses con un 'NA' en la columna Servicio\n" +
+                               "/uGPS_Electricos - dice patentes de los 25 buses Electricos, " +
+                               "la hora de su última transmisión GPS y sus columnas " +
+                               "'servicio_sentido_a_bordo_del_bus' (abreviada) y " +
+                               "'Ubicación' del webservice\n" +
+                               "/uGPS_10 - dice patentes de 10 buses al azar, la hora de su " +
+                               "última transmisión GPS y su columna Ubicación del webservice\n" +
+                               "/patentes_maipu - dice cuantas iniciales de patentes hay " +
+                               "transmitiendo en la tabla de últimas transmisiones\n" +
+                               "/anexo3 - dice salidas según anexo 3, por ejemplo " +
+                               "'/anexo3 F53e i l mh' consulta salidas por media hora(mh) " +
+                               "día laboral(l) sentido ida(i) del F53e\n" +
+                               "/donde - dice donde está una PPU y entrega columnas webservice " +
+                               "(servicio-sentido-fecha-hora-SSAB-estado-ubicacion), " +
+                               "ejemplo /donde FLXT33\n" +
+                               "/donde_maipu - dice donde está una PPU del terminal de Maipú, " +
+                               "ejemplo /donde BBZX38"))
 
     else:
         print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
@@ -1382,17 +1383,17 @@ def comandos(bot, update):
         if str(update.effective_user.id) == id_bruno_stefoni:
             bot.send_message(chat_id=update.message.chat_id,
                              text=("/comandos\n/version\n/f94_104\n/busesLL\n/busesEP\n" +
-                                    "/uGPS_Electricos\n/uGPS_10\n/anexo3\n/donde\n" +
-                                    "/Rorro\n/Pato\n/Cerdo\n/reset_accesos .\n" +
-                                    "/guardar_accesos .\n/manzana roja\n/orden66\n/stop\n" +
-                                    "/patentes_maipu\n/donde_maipu\n" +
-                                    "/ayuda\n/ayuda_nuevo_acceso"))
+                                   "/uGPS_Electricos\n/uGPS_10\n/anexo3\n/donde\n" +
+                                   "/Rorro\n/Pato\n/Cerdo\n/reset_accesos .\n" +
+                                   "/guardar_accesos .\n/manzana roja\n/orden66\n/stop\n" +
+                                   "/patentes_maipu\n/donde_maipu\n" +
+                                   "/ayuda\n/ayuda_nuevo_acceso"))
         else:
             bot.send_message(chat_id=update.message.chat_id,
                              text=("/comandos\n/version\n/f94_104\n/busesLL\n/busesEP\n" +
-                                    "/uGPS_Electricos\n/uGPS_10\n/anexo3\n/donde\n" +
-                                    "/donde_maipu\n/patentes_maipu\n" +
-                                    "/ayuda"))
+                                   "/uGPS_Electricos\n/uGPS_10\n/anexo3\n/donde\n" +
+                                   "/donde_maipu\n/patentes_maipu\n" +
+                                   "/ayuda"))
     else:
         bot.send_message(chat_id=update.message.chat_id, text="Acceso denegado.")
 
@@ -1521,17 +1522,17 @@ def donde(bot, update, args):
                 else:
                     bot.send_message(chat_id=update.message.chat_id,
                                      text=("No se encontró la PPU " + args[0].strip().upper() +
-                                          " quizá la PPU no existe, falló la conexión o es " +
-                                          "una PPU del terminal de maipú, en el última caso " +
-                                          "probar con comando /donde_maipu"))
+                                           " quizá la PPU no existe, falló la conexión o es " +
+                                           "una PPU del terminal de maipú, en el última caso " +
+                                           "probar con comando /donde_maipu"))
             else:
                 bot.send_message(chat_id=update.message.chat_id,
                                  text=("Tiene que ser una ppu sin guiones, " +
-                                      "por ejemplo /donde FLXT33"))
+                                       "por ejemplo /donde FLXT33"))
         else:
             bot.send_message(chat_id=update.message.chat_id,
                              text=("Enviar una ppu sin guiones con el comando, " +
-                                  "por ejemplo /donde FLXT33"))
+                                   "por ejemplo /donde FLXT33"))
     else:
         bot.send_message(chat_id=update.message.chat_id, text="Acceso denegado.")
 
@@ -1556,11 +1557,11 @@ def donde_maipu(bot, update, args):
             else:
                 bot.send_message(chat_id=update.message.chat_id,
                                  text=("Tiene que ser una ppu sin guiones, " +
-                                      "por ejemplo /donde FLXT33"))
+                                       "por ejemplo /donde FLXT33"))
         else:
             bot.send_message(chat_id=update.message.chat_id,
                              text=("Enviar una ppu sin guiones con el comando, " +
-                                  "por ejemplo /donde FLXT33"))
+                                   "por ejemplo /donde FLXT33"))
     else:
         bot.send_message(chat_id=update.message.chat_id, text="Acceso denegado.")
 
@@ -1622,7 +1623,7 @@ def guardar_accesos(bot, update, args):
             outfile.close()
             bot.send_message(chat_id=update.message.chat_id,
                              text=("Hola Bruno, " +
-                                  "se guardó el diccionario con los accesos actualizados"))
+                                   "se guardó el diccionario con los accesos actualizados"))
         else:
             bot.send_message(chat_id=update.message.chat_id,
                              text="Solo Bruno puede guardar los accesos actuales")
@@ -1655,11 +1656,11 @@ def manzana(bot, update, args):
                     else:
                         bot.send_message(chat_id=update.message.chat_id,
                                          text=("No te agregué con el nombre dado, " +
-                                              "debes ingresar menos de 60 caracteres"))
+                                               "debes ingresar menos de 60 caracteres"))
                 else:
                     bot.send_message(chat_id=update.message.chat_id,
                                      text=("No te agregué con el nombre dado, " +
-                                          "debes ingresar máximo 6 palabras"))
+                                           "debes ingresar máximo 6 palabras"))
             else:
                 bot.send_message(chat_id=update.message.chat_id,
                                  text=("No has proporcionado ningún nombre, " +
@@ -1667,10 +1668,10 @@ def manzana(bot, update, args):
 
     if str(update.effective_user.id) in lista_acceso_dic:
         print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
-                lista_acceso_dic[str(update.effective_user.id)] + ": /manzana"))
+              lista_acceso_dic[str(update.effective_user.id)] + ": /manzana"))
     else:
         print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
-                str(update.effective_user.id) + ": /manzana"))
+              str(update.effective_user.id) + ": /manzana"))
 
 
 def shutdown():
@@ -1682,7 +1683,7 @@ def shutdown():
 def stop(bot, update):
     if str(update.effective_user.id) in lista_acceso_dic:
         print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
-                lista_acceso_dic[str(update.effective_user.id)] + ": /stop "))
+              lista_acceso_dic[str(update.effective_user.id)] + ": /stop "))
 
         if seguro_telegramearlyexit:
             threading.Thread(target=shutdown).start()
