@@ -456,8 +456,11 @@ def consultar_fts_104():
                  (not row[0] in patentesL_electricos)]
         datosOK = [[row[0], float(row[1]), float(row[2]), row[3], row[4], row[5], row[6],
                    row[7], row[8], int(row[9]), int(row[10])] for row in datos]
-        datos_FTS = [row for row in datosOK if dt.datetime.combine(
-                     row[5], (dt.datetime.min + row[6]).time()) > ahora_delta and
+
+        for row in datosOK:
+            row[6] = dt.datetime.combine(row[5], (dt.datetime.min + row[6]).time())
+
+        datos_FTS = [row for row in datosOK if row[6] > ahora_delta and
                      ubicacion(row) == 'En ruta']
 
         df = pd.DataFrame(datos_FTS, columns=['PPU', 'Lat', 'Lon', 'Sentido',
@@ -627,9 +630,13 @@ def consultar_buses_cabezal_LosLeones():
                  (not row[0] in patentesL_electricos)]
         datosOK = [[row[0], float(row[1]), float(row[2]), row[3], row[4], row[5], row[6],
                     row[7], row[8], int(row[9]), int(row[10])] for row in datos]
-        datos_cabezal = [row for row in datosOK if dt.datetime.combine(
-                         row[5], (dt.datetime.min + row[6]).time()) > ahora_delta and
+
+        for row in datosOK:
+            row[6] = dt.datetime.combine(row[5], (dt.datetime.min + row[6]).time())
+
+        datos_cabezal = [row for row in datosOK if row[6] > ahora_delta and
                          ubicacion(row) == "Cabezal 104"]
+
         datos_cabezal = [[row[0], row[1], row[2], row[6], row[8], int(row[10])] for
                          row in datos_cabezal]
 
@@ -709,9 +716,13 @@ def consultar_buses_cabezal_ElPenon():
                  (not row[0] in patentesL_electricos)]
         datosOK = [[row[0], float(row[1]), float(row[2]), row[3], row[4], row[5], row[6],
                     row[7], row[8], int(row[9]), int(row[10])] for row in datos]
-        datos_cabezal = [row for row in datosOK if dt.datetime.combine(
-                         row[5], (dt.datetime.min + row[6]).time()) > ahora_delta and
+
+        for row in datosOK:
+            row[6] = dt.datetime.combine(row[5], (dt.datetime.min + row[6]).time())
+
+        datos_cabezal = [row for row in datosOK if row[6] > ahora_delta and
                          ubicacion(row) == "Cabezal Penon"]
+
         datos_cabezal = [[row[0], row[1], row[2], row[6], row[8], int(row[10])] for
                          row in datos_cabezal]
 
@@ -792,9 +803,13 @@ def consultar_rorro():
         print("Hay %d datos en las ultimas transmisiones" % len(datos))
         datosOK = [[row[0], float(row[1]), float(row[2]), row[3], row[4], row[5], row[6],
                     row[7], row[8], int(row[9]), int(row[10]), str(row[11])] for row in datos]
+        print("Hay %d datos en las ultimas transmisiones OK" % len(datosOK))
 
-        datos_cabezal = [row for row in datosOK if dt.datetime.combine(
-            row[5], (dt.datetime.min + row[6]).time()) > ahora_delta]
+        for row in datosOK:
+            row[6] = dt.datetime.combine(row[5], (dt.datetime.min + row[6]).time())
+
+        datos_cabezal = [row for row in datosOK if row[6] > ahora_delta]
+        print("Hay %d datos en las ultimas transmisiones recientes" % len(datos_cabezal))
         datos_cabezal = [[row[0], row[1], row[2], row[6], row[8], row[10], row[11]] for
                          row in datos_cabezal]
 
@@ -805,12 +820,13 @@ def consultar_rorro():
 
         if df.empty:
             mensaje_telegram = "No se encontraron buses"
+            print("Hay %d datos en las ultimas transmisiones OK" % len(datosOK))
+            print("Hay %d datos en las ultimas transmisiones recientes" % len(datos_cabezal))
 
         elif len(df.index) == 1:
 
             df['PPU'] = df.PPU.str.replace('-', '')
             df.drop_duplicates(subset=['PPU'], inplace=True)
-            df['hora'] = pd.to_datetime(df['hora'])
 
             df['estado_ignicion'] = "sin ignición"
             i = df.index[0]
@@ -826,7 +842,9 @@ def consultar_rorro():
 
             df.loc[i, 'estado_ignicion'] = cur3.fetchall()[0][0]
 
-            mensaje_telegram = "Patente | Estado Ignicion | Hora\n"
+            mensaje_telegram = ("Hay " + str(len(datos_cabezal)) +
+                                " registros en transmisiones recientes, por ejemplo:")
+            mensaje_telegram = mensaje_telegram + "\nPatente | Estado Ignicion | Hora\n"
             mensaje_telegram = (mensaje_telegram + df.loc[i, 'PPU'] + "  |  " +
                                 df.loc[i, 'estado_ignicion'] + "   | " +
                                 df.loc[i, 'hora'].strftime('%H:%M:%S') + "\n")
@@ -1360,39 +1378,71 @@ def ayuda(bot, update):
                                "/uGPS_10 - dice patentes de 10 buses al azar, la hora de su " +
                                "última transmisión GPS y su columna Ubicación del webservice\n" +
                                "/patentes_maipu - dice cuantas iniciales de patentes hay " +
-                               "transmitiendo en la tabla de últimas transmisiones\n" +
+                               "transmitiendo en la tabla de últimas transmisiones \n" +
                                "/anexo3 - dice salidas según anexo 3, por ejemplo " +
                                "'/anexo3 F53e i l mh' consulta salidas por media hora(mh) " +
                                "día laboral(l) sentido ida(i) del F53e\n" +
+                               "/n_registros - entrega número de registros en la tabla con " +
+                               "últimas transmisiones del terminal El Conquistador en Maipú\n" +
+                               "/n_registros_maipu - entrega número de registros en la tabla " +
+                               "con últimas transmisiones del terminal El Conquistador en Maipú\n" +
                                "/donde - dice donde está una PPU y entrega columnas webservice " +
                                "(servicio-sentido-fecha-hora-SSAB-estado-ubicacion), " +
                                "ejemplo /donde FLXT33\n" +
-                               "/donde_maipu - dice donde está una PPU del terminal de Maipú, " +
-                               "ejemplo /donde BBZX38"))
+                               "/donde_maipu - dice donde está una PPU del terminal " +
+                               "El Conquistador en Maipú, ejemplo /donde BBZX38\n"))
 
     else:
         print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
                str(update.effective_user.id) + ": /ayuda (unauthorized)"))
         bot.send_message(chat_id=update.message.chat_id,
                          text=("No tienes permiso para usar el bot, habla con alguien de " +
-                               "Operaciones para pedir ayuda sobre cómo tener acceso."))
+                               "la Gerencia de Operaciones y Estudios para pedir ayuda sobre " +
+                               "cómo obtener acceso."))
 
 
 def comandos(bot, update):
     if str(update.effective_user.id) in lista_acceso_dic:
         if str(update.effective_user.id) == id_bruno_stefoni:
             bot.send_message(chat_id=update.message.chat_id,
-                             text=("/comandos\n/version\n/f94_104\n/busesLL\n/busesEP\n" +
-                                   "/uGPS_Electricos\n/uGPS_10\n/anexo3\n/donde\n" +
-                                   "/Rorro\n/Pato\n/Cerdo\n/reset_accesos .\n" +
-                                   "/guardar_accesos .\n/manzana roja\n/orden66\n/stop\n" +
-                                   "/patentes_maipu\n/donde_maipu\n" +
-                                   "/ayuda\n/ayuda_nuevo_acceso"))
+                             text=("/comandos\n" +
+                                   "/version\n" +
+                                   "/f94_104\n" +
+                                   "/busesLL\n" +
+                                   "/busesEP\n" +
+                                   "/uGPS_Electricos\n" +
+                                   "/uGPS_10\n" +
+                                   "/patentes_maipu\n" +
+                                   "/anexo3\n" +
+                                   "/n_registros\n" +
+                                   "/n_registros_maipu\n" +
+                                   "/donde\n" +
+                                   "/donde_maipu\n" +
+                                   "/Rorro\n" +
+                                   "/Pato\n" +
+                                   "/Cerdo\n" +
+                                   "/reset_accesos .\n" +
+                                   "/guardar_accesos .\n" +
+                                   "/manzana roja\n" +
+                                   "/orden66\n" +
+                                   "/stop\n" +
+                                   "/ayuda\n" +
+                                   "/ayuda_nuevo_acceso"))
         else:
             bot.send_message(chat_id=update.message.chat_id,
-                             text=("/comandos\n/version\n/f94_104\n/busesLL\n/busesEP\n" +
-                                   "/uGPS_Electricos\n/uGPS_10\n/anexo3\n/donde\n" +
-                                   "/donde_maipu\n/patentes_maipu\n" +
+                             text=("/comandos\n" +
+                                   "/version\n" +
+                                   "/f94_104\n" +
+                                   "/busesLL\n" +
+                                   "/busesEP\n" +
+                                   "/uGPS_Electricos\n" +
+                                   "/uGPS_10\n" +
+                                   "/patentes_maipu\n" +
+                                   "/anexo3\n" +
+                                   "/n_registros\n" +
+                                   "/n_registros_maipu\n" +
+                                   "/donde\n" +
+                                   "/donde_maipu\n" +
                                    "/ayuda"))
     else:
         bot.send_message(chat_id=update.message.chat_id, text="Acceso denegado.")
@@ -1521,10 +1571,19 @@ def donde(bot, update, args):
 
                 else:
                     bot.send_message(chat_id=update.message.chat_id,
+                                     text="No se encontró PPU, " +
+                                          "consultando transmisiones de terminal " +
+                                          "El Conquistador..")
+                    latlon_consulta = consultar_donde_esta_ppu_maipu(args[0].strip().upper())
+                    if latlon_consulta:
+                        bot.send_message(chat_id=update.message.chat_id,
+                                         text=latlon_consulta[2])
+                        bot.send_location(chat_id=update.message.chat_id,
+                                          latitude=latlon_consulta[0], longitude=latlon_consulta[1])
+
+                    bot.send_message(chat_id=update.message.chat_id,
                                      text=("No se encontró la PPU " + args[0].strip().upper() +
-                                           " quizá la PPU no existe, falló la conexión o es " +
-                                           "una PPU del terminal de maipú, en el última caso " +
-                                           "probar con comando /donde_maipu"))
+                                           " quizá la PPU no existe o falló la conexión"))
             else:
                 bot.send_message(chat_id=update.message.chat_id,
                                  text=("Tiene que ser una ppu sin guiones, " +
