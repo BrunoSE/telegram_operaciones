@@ -1100,11 +1100,11 @@ def consultar_numero_ultimas_transmisiones():
         delta_query = ahora - ahora_ultima_query_arreglo[numero_de_funcion_query]
 
     if delta_query > criterio_spam_rorro or primera_query_arreglo[numero_de_funcion_query]:
-        print("hola1")
+
         primera_query_arreglo[numero_de_funcion_query] = False
         ahora_ultima_query_arreglo[numero_de_funcion_query] = ahora
         ahora_delta = ahora - dt.timedelta(minutes=delta_hacia_atras)
-        print("hola2")
+
         db1 = MySQLdb.connect(host=ip_bd_edu,
                               user="brunom",
                               passwd="Manzana",
@@ -1114,18 +1114,20 @@ def consultar_numero_ultimas_transmisiones():
         cur1.execute("SELECT patente, latitudgps, longitudgps, servicio, sentido, fecha, hora, " +
                      "servicio_sentido_a_bordo_del_bus, estado, velocidad_instantanea_del_bus, " +
                      "tiempo_detenido, idwebservice FROM ultimas_transmisiones;")
-        print("hola3")
+
         datos = [row for row in cur1.fetchall() if len(row) == 12 and row[1] is not None]
         mensaje_telegram = "Hay " + str(len(datos)) + " datos en las ultimas transmisiones"
-        print("hola4")
+        print(mensaje_telegram)
         for row in datos:
             row[6] = dt.datetime.combine(row[5], (dt.datetime.min + row[6]).time())
-
+        print("hola4")
         datos = [row for row in datos if row[6] > ahora_delta]
+        print("hola5")
         mensaje_telegram = mensaje_telegram + ("\nDe estos registros, " + str(len(datos)) +
                                                " corresponden a " + "transmisiones recientes")
-
+        print(mensaje_telegram)
         mensaje_ultima_query_arreglo[numero_de_funcion_query] = mensaje_telegram
+        print("hola7")
         return mensaje_ultima_query_arreglo[numero_de_funcion_query]
 
     else:
