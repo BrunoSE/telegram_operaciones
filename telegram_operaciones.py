@@ -1109,14 +1109,14 @@ def consultar_numero_ultimas_transmisiones():
                      "tiempo_detenido, idwebservice FROM ultimas_transmisiones;")
 
         datos = [row for row in cur1.fetchall() if len(row) == 12 and row[1] is not None]
-        mensaje_telegram = ("Hay %d datos en las ultimas transmisiones" % len(datos))
+        mensaje_telegram = "Hay " + str(len(datos)) + " datos en las ultimas transmisiones"
 
         for row in datos:
             row[6] = dt.datetime.combine(row[5], (dt.datetime.min + row[6]).time())
 
         datos = [row for row in datos if row[6] > ahora_delta]
-        mensaje_telegram = mensaje_telegram + ("\nDe estos registros, %d corresponden a " +
-                                               "transmisiones recientes" % len(datos))
+        mensaje_telegram = mensaje_telegram + ("\nDe estos registros, " + str(len(datos)) +
+                                               " corresponden a " + "transmisiones recientes")
 
         mensaje_ultima_query_arreglo[numero_de_funcion_query] = mensaje_telegram
         return mensaje_ultima_query_arreglo[numero_de_funcion_query]
@@ -1153,15 +1153,15 @@ def consultar_numero_ultimas_transmisiones_maipu():
                      "tiempo_detenido, idwebservice FROM ultimas_transmisiones_c;")
 
         datos = [row for row in cur1.fetchall() if len(row) == 12 and row[1] is not None]
-        mensaje_telegram = ("Hay %d datos en las ultimas transmisiones " +
-                            " del terminal El Conquistador" % len(datos))
+        mensaje_telegram = ("Hay " + str(len(datos)) + " datos en las ultimas transmisiones " +
+                            " del terminal El Conquistador")
 
         for row in datos:
             row[6] = dt.datetime.combine(row[5], (dt.datetime.min + row[6]).time())
 
         datos = [row for row in datos if row[6] > ahora_delta]
-        mensaje_telegram = mensaje_telegram + ("\nDe estos registros, %d corresponden a " +
-                                               "transmisiones recientes" % len(datos))
+        mensaje_telegram = mensaje_telegram + ("\nDe estos registros, " + str(len(datos)) +
+                                               " corresponden a " + "transmisiones recientes")
 
         mensaje_ultima_query_arreglo[numero_de_funcion_query] = mensaje_telegram
         return mensaje_ultima_query_arreglo[numero_de_funcion_query]
@@ -1397,9 +1397,7 @@ def ayuda(bot, update):
                                "con últimas transmisiones del terminal El Conquistador en Maipú\n" +
                                "/donde - dice donde está una PPU y entrega columnas webservice " +
                                "(servicio-sentido-fecha-hora-SSAB-estado-ubicacion), " +
-                               "por ejemplo /donde FLXT33\n" +
-                               "/donde_maipu - dice donde está una PPU del terminal " +
-                               "El Conquistador en Maipú, por ejemplo /donde_maipu BBZX38\n"))
+                               "por ejemplo: '/donde FLXT33'\n"))
 
     else:
         print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
@@ -1426,7 +1424,6 @@ def comandos(bot, update):
                                    "/n_registros\n" +
                                    "/n_registros_maipu\n" +
                                    "/donde\n" +
-                                   "/donde_maipu\n" +
                                    "/Rorro\n" +
                                    "/Pato\n" +
                                    "/Cerdo\n" +
@@ -1451,7 +1448,6 @@ def comandos(bot, update):
                                    "/n_registros\n" +
                                    "/n_registros_maipu\n" +
                                    "/donde\n" +
-                                   "/donde_maipu\n" +
                                    "/ayuda"))
     else:
         bot.send_message(chat_id=update.message.chat_id, text="Acceso denegado.")
@@ -1578,50 +1574,17 @@ def donde(bot, update, args):
                     bot.send_location(chat_id=update.message.chat_id,
                                       latitude=latlon_consulta[0], longitude=latlon_consulta[1])
 
-                else:
-                    bot.send_message(chat_id=update.message.chat_id,
-                                     text="No se encontró PPU, " +
-                                          "consultando transmisiones de terminal " +
-                                          "El Conquistador..")
+                else:  # en caso que no exista, puede ser una ppu de maipú, intentar en esa tabla:
                     latlon_consulta = consultar_donde_esta_ppu_maipu(args[0].strip().upper())
                     if latlon_consulta:
                         bot.send_message(chat_id=update.message.chat_id,
                                          text=latlon_consulta[2])
                         bot.send_location(chat_id=update.message.chat_id,
                                           latitude=latlon_consulta[0], longitude=latlon_consulta[1])
-
-                    bot.send_message(chat_id=update.message.chat_id,
-                                     text=("No se encontró la PPU " + args[0].strip().upper() +
-                                           " quizá la PPU no existe o falló la conexión"))
-            else:
-                bot.send_message(chat_id=update.message.chat_id,
-                                 text=("Tiene que ser una ppu sin guiones, " +
-                                       "por ejemplo /donde FLXT33"))
-        else:
-            bot.send_message(chat_id=update.message.chat_id,
-                             text=("Enviar una ppu sin guiones con el comando, " +
-                                   "por ejemplo /donde FLXT33"))
-    else:
-        bot.send_message(chat_id=update.message.chat_id, text="Acceso denegado.")
-
-
-def donde_maipu(bot, update, args):
-    if str(update.effective_user.id) in lista_acceso_dic:
-        if args:
-            print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
-                   lista_acceso_dic[str(update.effective_user.id)] + ": /donde_maipu " +
-                   args[0]))
-            if len(args[0].strip()) == 6:
-                latlon_consulta = consultar_donde_esta_ppu_maipu(args[0].strip().upper())
-                if latlon_consulta:
-                    bot.send_message(chat_id=update.message.chat_id, text=latlon_consulta[2])
-                    bot.send_location(chat_id=update.message.chat_id,
-                                      latitude=latlon_consulta[0], longitude=latlon_consulta[1])
-
-                else:
-                    bot.send_message(chat_id=update.message.chat_id,
-                                     text="No se encontró la PPU " + args[0].strip().upper() +
-                                          " quizá la PPU no existe o falló la conexión")
+                    else:
+                        bot.send_message(chat_id=update.message.chat_id,
+                                         text=("No se encontró la PPU " + args[0].strip().upper() +
+                                               " quizá la PPU no existe o falló la conexión"))
             else:
                 bot.send_message(chat_id=update.message.chat_id,
                                  text=("Tiene que ser una ppu sin guiones, " +
@@ -1788,7 +1751,6 @@ def main():
 
     dispatcher.add_handler(CommandHandler('anexo3', anexo3, pass_args=True))
     dispatcher.add_handler(CommandHandler('donde', donde, pass_args=True))
-    dispatcher.add_handler(CommandHandler('donde_maipu', donde_maipu, pass_args=True))
 
     dispatcher.add_handler(CommandHandler('Pato', Pato))
     dispatcher.add_handler(CommandHandler('Rorro', Rorro))
