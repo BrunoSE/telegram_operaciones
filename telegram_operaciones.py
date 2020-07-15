@@ -350,7 +350,7 @@ def mensaje_tiempo_estimado(tiempo_estimado):
     return str(int((int(tiempo_estimado) + 1)))
 
 
-# dibuja mapa de fts
+# dibuja mapa de fts, uso interno para debuggear y visualizar cabezales en un mapa html
 def dibujar_FTS(df_aux):
     m = folium.Map(location=[-33.5, -70.6], tiles='openstreetmap',
                    zoom_start=12, control_scale=True)
@@ -802,10 +802,10 @@ def consultar_rorro():
         for row in datosOK:
             row[6] = dt.datetime.combine(row[5], (dt.datetime.min + row[6]).time())
 
-        datos_cabezal = [row for row in datosOK if row[6] > ahora_delta]
-        print("Hay %d datos en las ultimas transmisiones recientes" % len(datos_cabezal))
+        datosOK = [row for row in datosOK if row[6] > ahora_delta]
+        print("Hay %d datos en las ultimas transmisiones recientes" % len(datosOK))
         datos_cabezal = [[row[0], row[1], row[2], row[6], row[8], row[10], row[11]] for
-                         row in datos_cabezal]
+                         row in datosOK]
 
         if datos_cabezal:
             datos_cabezal = [datos_cabezal[randint(0, (len(datos_cabezal) - 1))]]
@@ -889,6 +889,10 @@ def consultar_ultima_transmision_10():
         datos = [datos[i] for i in sample(range(0, (len(datos) - 1)), tamanno_muestra)]
         datosOK = [[row[0], float(row[1]), float(row[2]), row[3], row[4], row[5], row[6], row[7],
                    row[8], int(row[9]), int(row[10]), str(row[11]), str(row[12])] for row in datos]
+
+        for row in datosOK:
+            row[6] = dt.datetime.combine(row[5], (dt.datetime.min + row[6]).time())
+
         datos_cabezal = [[row[0], row[1], row[2], row[6], row[8], row[10], row[11], row[12]] for
                          row in datosOK]
 
@@ -901,7 +905,6 @@ def consultar_ultima_transmision_10():
         else:
             df['PPU'] = df.PPU.str.replace('-', '')
             df.drop_duplicates(subset=['PPU'], inplace=True)
-            df['hora'] = pd.to_datetime(df['hora'])
 
             mensaje_telegram = ("Se sacó una muestra de " + str(len(df.index)) +
                                 " buses entre las últimas transmisiones\n")
@@ -954,6 +957,10 @@ def consultar_ultima_transmision_electricos():
                  row[1] is not None]
         datosOK = [[row[0], float(row[1]), float(row[2]), row[3], row[4], row[5], row[6], row[7],
                    row[8], int(row[9]), int(row[10]), str(row[11]), str(row[12])] for row in datos]
+
+        for row in datosOK:
+            row[6] = dt.datetime.combine(row[5], (dt.datetime.min + row[6]).time())
+
         datos_cabezal = [[row[0], row[1], row[2], row[6], row[7], row[8],
                           row[10], row[11], row[12]] for row in datosOK]
 
@@ -971,7 +978,6 @@ def consultar_ultima_transmision_electricos():
 
             df['PPU'] = df.PPU.str.replace('-', '')
             df.drop_duplicates(subset=['PPU'], inplace=True)
-            df['hora'] = pd.to_datetime(df['hora'])
 
             df.loc[df['ubicacion'] == 'Fuera Ruta', 'ubicacion'] = 'a Fuera Ruta'
             df.loc[df['ubicacion'] == 'En Ruta sin Tx', 'ubicacion'] = 'b En Ruta sin Tx'
@@ -1041,6 +1047,10 @@ def consultar_patentes_ultima_transmision_maipu():
         datos = [row for row in cur1.fetchall()]
         datosOK = [[row[0], float(row[1]), float(row[2]), row[3], row[4], row[5], row[6], row[7],
                    row[8], int(row[9]), int(row[10]), str(row[11]), str(row[12])] for row in datos]
+
+        for row in datosOK:
+            row[6] = dt.datetime.combine(row[5], (dt.datetime.min + row[6]).time())
+
         datos_cabezal = [[row[0], row[1], row[2], row[6], row[8], row[10], row[11], row[12]] for
                          row in datosOK]
 
@@ -1054,7 +1064,6 @@ def consultar_patentes_ultima_transmision_maipu():
         else:
             df['PPU'] = df.PPU.str.replace('-', '')
             df.drop_duplicates(subset=['PPU'], inplace=True)
-            df['hora'] = pd.to_datetime(df['hora'])
 
             mensaje_telegram = ("Hay " + str(len(df.index)) +
                                 " patentes distintas entre las últimas transmisiones\n")
@@ -1091,10 +1100,11 @@ def consultar_numero_ultimas_transmisiones():
         delta_query = ahora - ahora_ultima_query_arreglo[numero_de_funcion_query]
 
     if delta_query > criterio_spam_rorro or primera_query_arreglo[numero_de_funcion_query]:
+        print("hola1")
         primera_query_arreglo[numero_de_funcion_query] = False
         ahora_ultima_query_arreglo[numero_de_funcion_query] = ahora
         ahora_delta = ahora - dt.timedelta(minutes=delta_hacia_atras)
-
+        print("hola2")
         db1 = MySQLdb.connect(host=ip_bd_edu,
                               user="brunom",
                               passwd="Manzana",
@@ -1104,10 +1114,10 @@ def consultar_numero_ultimas_transmisiones():
         cur1.execute("SELECT patente, latitudgps, longitudgps, servicio, sentido, fecha, hora, " +
                      "servicio_sentido_a_bordo_del_bus, estado, velocidad_instantanea_del_bus, " +
                      "tiempo_detenido, idwebservice FROM ultimas_transmisiones;")
-
+        print("hola3")
         datos = [row for row in cur1.fetchall() if len(row) == 12 and row[1] is not None]
         mensaje_telegram = "Hay " + str(len(datos)) + " datos en las ultimas transmisiones"
-
+        print("hola4")
         for row in datos:
             row[6] = dt.datetime.combine(row[5], (dt.datetime.min + row[6]).time())
 
