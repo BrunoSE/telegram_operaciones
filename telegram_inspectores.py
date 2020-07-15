@@ -76,7 +76,7 @@ db0.close()
 
 
 TOKEN = "838619024:AAEbif7W-ZS4OKJA0W1MFS8Il3-1jptsx7s"  # llave stp100
-updater = Updater(token=TOKEN)
+updater = Updater(token=TOKEN, use_context=False)
 
 
 # funcion que obtiene tiempo restante en funcion de la distancia restante
@@ -702,6 +702,14 @@ def busesEP(bot, update):
           str(update.effective_user.id) + ": /busesEP")
 
 
+def donde(bot, update):
+    chatID = update.message.chat_id
+    bot.send_message(chat_id=chatID, text="Este bot no tiene esa función, " +
+                                          "quizá te equivocaste de bot")
+    print("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+          str(update.effective_user.id) + ": /version")
+
+
 def shutdown():
     if updater.is_idle:
         updater.is_idle = False
@@ -733,6 +741,7 @@ def main():
     dispatcher.add_handler(CommandHandler('F94_104', F94_104))
     dispatcher.add_handler(CommandHandler('busesLL', busesLL))
     dispatcher.add_handler(CommandHandler('busesEP', busesEP))
+    dispatcher.add_handler(CommandHandler('donde', donde))
     dispatcher.add_handler(CommandHandler('stop', stop))
     dispatcher.add_handler(CommandHandler('orden66', orden66))
 

@@ -8,13 +8,10 @@ import json
 import datetime as dt
 import pandas as pd
 from telegram.ext import Updater, CommandHandler, MessageHandler
-import warnings  # para que ubuntu no arroje error
 testeo = False  # si se ocupara bot de prueba o no
-n_version = "9.3"
+n_version = "9.4"
 ip_webservice = "192.168.11.199"
 ip_bd_edu = "192.168.11.150"
-
-warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
 global lista_acceso_dic
@@ -1354,6 +1351,12 @@ def start(bot, update):
     bot.send_message(chat_id=update.message.chat_id,
                      text="Hola, para empezar a usar este bot debes saber la password. " +
                           "Si tienes dudas sobre cómo ocuparlo mándame el mensaje /ayuda")
+    if str(update.effective_user.id) in lista_acceso_dic:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+              lista_acceso_dic[str(update.effective_user.id)] + ": /start"))
+    else:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+              str(update.effective_user.id) + ": /start"))
 
 
 def ayuda(bot, update):
@@ -1406,6 +1409,12 @@ def ayuda(bot, update):
                          text=("No tienes permiso para usar el bot, habla con alguien de " +
                                "la Gerencia de Operaciones y Estudios para pedir ayuda sobre " +
                                "cómo obtener acceso."))
+    if str(update.effective_user.id) in lista_acceso_dic:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+              lista_acceso_dic[str(update.effective_user.id)] + ": /ayuda"))
+    else:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+              str(update.effective_user.id) + ": /ayuda"))
 
 
 def comandos(bot, update):
@@ -1451,6 +1460,12 @@ def comandos(bot, update):
                                    "/ayuda"))
     else:
         bot.send_message(chat_id=update.message.chat_id, text="Acceso denegado.")
+    if str(update.effective_user.id) in lista_acceso_dic:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+              lista_acceso_dic[str(update.effective_user.id)] + ": /comandos"))
+    else:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+              str(update.effective_user.id) + ": /comandos"))
 
 
 def version(bot, update):
@@ -1458,6 +1473,12 @@ def version(bot, update):
                      text="Bot de Telegram de STP versión " +
                      n_version + " pensado para la Gerencia de Operaciones y Estudios \n" +
                      "Hecho por Bruno Stefoni")
+    if str(update.effective_user.id) in lista_acceso_dic:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+              lista_acceso_dic[str(update.effective_user.id)] + ": /version"))
+    else:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+              str(update.effective_user.id) + ": /version"))
 
 
 def ayuda_nuevo_acceso(bot, update):
@@ -1479,6 +1500,8 @@ def ayuda_nuevo_acceso(bot, update):
 
 def F94_104(bot, update):
     if str(update.effective_user.id) in lista_acceso_dic:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+              lista_acceso_dic[str(update.effective_user.id)] + ": /F94_104 "))
         bot.send_message(chat_id=update.message.chat_id, text="Consultando base de datos..")
         mensaje_a_enviar = consultar_fts_104()
         bot.send_message(chat_id=update.message.chat_id, text=mensaje_a_enviar)
@@ -1488,6 +1511,8 @@ def F94_104(bot, update):
 
 def busesLL(bot, update):
     if str(update.effective_user.id) in lista_acceso_dic:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+              lista_acceso_dic[str(update.effective_user.id)] + ": /busesLL "))
         bot.send_message(chat_id=update.message.chat_id, text="Consultando base de datos..")
         mensaje_a_enviar = consultar_buses_cabezal_LosLeones()
         bot.send_message(chat_id=update.message.chat_id, text=mensaje_a_enviar)
@@ -1497,6 +1522,8 @@ def busesLL(bot, update):
 
 def busesEP(bot, update):
     if str(update.effective_user.id) in lista_acceso_dic:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+              lista_acceso_dic[str(update.effective_user.id)] + ": /busesEP "))
         bot.send_message(chat_id=update.message.chat_id, text="Consultando base de datos..")
         mensaje_a_enviar = consultar_buses_cabezal_ElPenon()
         bot.send_message(chat_id=update.message.chat_id, text=mensaje_a_enviar)
@@ -1506,6 +1533,8 @@ def busesEP(bot, update):
 
 def uGPS_Electricos(bot, update):
     if str(update.effective_user.id) in lista_acceso_dic:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+              lista_acceso_dic[str(update.effective_user.id)] + ": /uGPS_Electricos "))
         bot.send_message(chat_id=update.message.chat_id, text="Consultando base de datos..")
         mensaje_a_enviar = consultar_ultima_transmision_electricos()
         bot.send_message(chat_id=update.message.chat_id, text=mensaje_a_enviar)
@@ -1515,6 +1544,8 @@ def uGPS_Electricos(bot, update):
 
 def uGPS_10(bot, update):
     if str(update.effective_user.id) in lista_acceso_dic:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+              lista_acceso_dic[str(update.effective_user.id)] + ": /uGPS_10 "))
         bot.send_message(chat_id=update.message.chat_id, text="Consultando base de datos..")
         mensaje_a_enviar = consultar_ultima_transmision_10()
         bot.send_message(chat_id=update.message.chat_id, text=mensaje_a_enviar)
@@ -1524,6 +1555,8 @@ def uGPS_10(bot, update):
 
 def patentes_maipu(bot, update):
     if str(update.effective_user.id) in lista_acceso_dic:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+              lista_acceso_dic[str(update.effective_user.id)] + ": /patentes_maipu "))
         bot.send_message(chat_id=update.message.chat_id, text="Consultando base de datos..")
         mensaje_a_enviar = consultar_patentes_ultima_transmision_maipu()
         bot.send_message(chat_id=update.message.chat_id, text=mensaje_a_enviar)
@@ -1533,6 +1566,8 @@ def patentes_maipu(bot, update):
 
 def n_registros(bot, update):
     if str(update.effective_user.id) in lista_acceso_dic:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+              lista_acceso_dic[str(update.effective_user.id)] + ": /n_registros "))
         bot.send_message(chat_id=update.message.chat_id, text="Consultando base de datos..")
         mensaje_a_enviar = consultar_numero_ultimas_transmisiones()
         bot.send_message(chat_id=update.message.chat_id, text=mensaje_a_enviar)
@@ -1542,6 +1577,8 @@ def n_registros(bot, update):
 
 def n_registros_maipu(bot, update):
     if str(update.effective_user.id) in lista_acceso_dic:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+              lista_acceso_dic[str(update.effective_user.id)] + ": /n_registros_maipu "))
         bot.send_message(chat_id=update.message.chat_id, text="Consultando base de datos..")
         mensaje_a_enviar = consultar_numero_ultimas_transmisiones_maipu()
         bot.send_message(chat_id=update.message.chat_id, text=mensaje_a_enviar)
@@ -1551,6 +1588,8 @@ def n_registros_maipu(bot, update):
 
 def anexo3(bot, update, args):
     if str(update.effective_user.id) in lista_acceso_dic:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+              lista_acceso_dic[str(update.effective_user.id)] + ": /anexo3 "))
         args_procesado = procesar_argumento_comando_anexo3(args)
         bot.send_message(chat_id=update.message.chat_id, text=args_procesado[0])
         if args_procesado[1]:
@@ -1619,6 +1658,8 @@ def Rorro(bot, update):
 
 def Pato(bot, update):
     if str(update.effective_user.id) in lista_acceso_dic:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+              lista_acceso_dic[str(update.effective_user.id)] + ": /Pato "))
         bot.send_message(chat_id=update.message.chat_id, text="Consultando base de datos garca..")
         mensaje_a_enviar = consultar_pato()
         bot.send_message(chat_id=update.message.chat_id, text=mensaje_a_enviar)
@@ -1628,6 +1669,8 @@ def Pato(bot, update):
 
 def cerdo(bot, update):
     if str(update.effective_user.id) in lista_acceso_dic:
+        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
+              lista_acceso_dic[str(update.effective_user.id)] + ": /cerdo "))
         bot.send_message(chat_id=update.message.chat_id, text="Lo más " +
                          lista_acceso_dic[str(update.effective_user.id)] + " cerdo asqueroso 🐷")
     else:
