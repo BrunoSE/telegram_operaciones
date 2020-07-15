@@ -344,18 +344,16 @@ def geocerca_LosLeonesDetenido_romboideX(p):
     else:
         return False
 
+
 # devuelve mensaje de tiempo estimado si se pudo estimar
-
-
 def mensaje_tiempo_estimado(tiempo_estimado):
     if tiempo_estimado > 997:
         return "FR"  # esta fuera de ruta
 
     return str(int((int(tiempo_estimado) + 1)))
 
+
 # dibuja mapa de fts
-
-
 def dibujar_FTS(df_aux):
     m = folium.Map(location=[-33.5, -70.6], tiles='openstreetmap',
                    zoom_start=12, control_scale=True)
@@ -371,9 +369,8 @@ def dibujar_FTS(df_aux):
     grp_pulsos.add_to(m)
     m.save('Ultimos_pulsosFTS104.html')
 
-# dibuja mapa en cabezales
 
-
+# dibuja cabezal, uso interno para debuggear y visualizar cabezales en un mapa html
 def dibujar_cabezal(df_aux, nombre_cabezal):
 
     def coordenadas_poligono_romboide_ejeX(latlon1, latlon2,
@@ -820,8 +817,6 @@ def consultar_rorro():
 
         if df.empty:
             mensaje_telegram = "No se encontraron buses"
-            print("Hay %d datos en las ultimas transmisiones OK" % len(datosOK))
-            print("Hay %d datos en las ultimas transmisiones recientes" % len(datos_cabezal))
 
         elif len(df.index) == 1:
 
@@ -842,7 +837,7 @@ def consultar_rorro():
 
             df.loc[i, 'estado_ignicion'] = cur3.fetchall()[0][0]
 
-            mensaje_telegram = ("Hay " + str(len(datos_cabezal)) +
+            mensaje_telegram = ("Hay " + str(len(datosOK)) +
                                 " registros en transmisiones recientes, por ejemplo:")
             mensaje_telegram = mensaje_telegram + "\nPatente | Estado Ignicion | Hora\n"
             mensaje_telegram = (mensaje_telegram + df.loc[i, 'PPU'] + "  |  " +
@@ -1101,6 +1096,7 @@ def consultar_numero_ultimas_transmisiones():
     if delta_query > criterio_spam_rorro or primera_query_arreglo[numero_de_funcion_query]:
         primera_query_arreglo[numero_de_funcion_query] = False
         ahora_ultima_query_arreglo[numero_de_funcion_query] = ahora
+        ahora_delta = ahora - dt.timedelta(minutes=delta_hacia_atras)
 
         db1 = MySQLdb.connect(host=ip_bd_edu,
                               user="brunom",
@@ -1113,9 +1109,14 @@ def consultar_numero_ultimas_transmisiones():
                      "tiempo_detenido, idwebservice FROM ultimas_transmisiones;")
 
         datos = [row for row in cur1.fetchall() if len(row) == 12 and row[1] is not None]
-        mensaje_telegram = ("Hay " + str(len(datos)) + " registros en la tabla " +
-                            "ultimas_transmisiones")
-        print(mensaje_telegram)
+        mensaje_telegram = ("Hay %d datos en las ultimas transmisiones" % len(datos))
+
+        for row in datos:
+            row[6] = dt.datetime.combine(row[5], (dt.datetime.min + row[6]).time())
+
+        datos = [row for row in datos if row[6] > ahora_delta]
+        mensaje_telegram = mensaje_telegram + ("\nDe estos registros, %d corresponden a " +
+                                               "transmisiones recientes" % len(datos))
 
         mensaje_ultima_query_arreglo[numero_de_funcion_query] = mensaje_telegram
         return mensaje_ultima_query_arreglo[numero_de_funcion_query]
@@ -1139,6 +1140,7 @@ def consultar_numero_ultimas_transmisiones_maipu():
     if delta_query > criterio_spam_rorro or primera_query_arreglo[numero_de_funcion_query]:
         primera_query_arreglo[numero_de_funcion_query] = False
         ahora_ultima_query_arreglo[numero_de_funcion_query] = ahora
+        ahora_delta = ahora - dt.timedelta(minutes=delta_hacia_atras)
 
         db1 = MySQLdb.connect(host=ip_bd_edu,
                               user="brunom",
@@ -1151,9 +1153,15 @@ def consultar_numero_ultimas_transmisiones_maipu():
                      "tiempo_detenido, idwebservice FROM ultimas_transmisiones_c;")
 
         datos = [row for row in cur1.fetchall() if len(row) == 12 and row[1] is not None]
-        mensaje_telegram = ("Hay " + str(len(datos)) + " registros en la tabla " +
-                            "ultimas_transmisiones_c (maipu)")
-        print(mensaje_telegram)
+        mensaje_telegram = ("Hay %d datos en las ultimas transmisiones " +
+                            " del terminal El Conquistador" % len(datos))
+
+        for row in datos:
+            row[6] = dt.datetime.combine(row[5], (dt.datetime.min + row[6]).time())
+
+        datos = [row for row in datos if row[6] > ahora_delta]
+        mensaje_telegram = mensaje_telegram + ("\nDe estos registros, %d corresponden a " +
+                                               "transmisiones recientes" % len(datos))
 
         mensaje_ultima_query_arreglo[numero_de_funcion_query] = mensaje_telegram
         return mensaje_ultima_query_arreglo[numero_de_funcion_query]
@@ -1378,7 +1386,8 @@ def ayuda(bot, update):
                                "/uGPS_10 - dice patentes de 10 buses al azar, la hora de su " +
                                "última transmisión GPS y su columna Ubicación del webservice\n" +
                                "/patentes_maipu - dice cuantas iniciales de patentes hay " +
-                               "transmitiendo en la tabla de últimas transmisiones \n" +
+                               "transmitiendo en la tabla de últimas transmisiones del terminal " +
+                               "El Conquistador en Maipú \n" +
                                "/anexo3 - dice salidas según anexo 3, por ejemplo " +
                                "'/anexo3 F53e i l mh' consulta salidas por media hora(mh) " +
                                "día laboral(l) sentido ida(i) del F53e\n" +
@@ -1388,9 +1397,9 @@ def ayuda(bot, update):
                                "con últimas transmisiones del terminal El Conquistador en Maipú\n" +
                                "/donde - dice donde está una PPU y entrega columnas webservice " +
                                "(servicio-sentido-fecha-hora-SSAB-estado-ubicacion), " +
-                               "ejemplo /donde FLXT33\n" +
+                               "por ejemplo /donde FLXT33\n" +
                                "/donde_maipu - dice donde está una PPU del terminal " +
-                               "El Conquistador en Maipú, ejemplo /donde BBZX38\n"))
+                               "El Conquistador en Maipú, por ejemplo /donde_maipu BBZX38\n"))
 
     else:
         print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
