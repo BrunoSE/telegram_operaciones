@@ -1116,18 +1116,22 @@ def consultar_numero_ultimas_transmisiones():
                      "tiempo_detenido, idwebservice FROM ultimas_transmisiones;")
 
         datos = [row for row in cur1.fetchall() if len(row) == 12 and row[1] is not None]
+
         mensaje_telegram = "Hay " + str(len(datos)) + " datos en las ultimas transmisiones"
         print(mensaje_telegram)
-        for row in datos:
+
+        datosOK = [[row[0], float(row[1]), float(row[2]), row[3], row[4], row[5], row[6],
+                    row[7], row[8], int(row[9]), int(row[10]), str(row[11])] for row in datos]
+
+        for row in datosOK:
             row[6] = dt.datetime.combine(row[5], (dt.datetime.min + row[6]).time())
-        print("hola4")
-        datos = [row for row in datos if row[6] > ahora_delta]
-        print("hola5")
-        mensaje_telegram = mensaje_telegram + ("\nDe estos registros, " + str(len(datos)) +
+
+        datosOK = [row for row in datosOK if row[6] > ahora_delta]
+        mensaje_telegram = mensaje_telegram + ("\nDe estos registros, " + str(len(datosOK)) +
                                                " corresponden a " + "transmisiones recientes")
-        print(mensaje_telegram)
+
         mensaje_ultima_query_arreglo[numero_de_funcion_query] = mensaje_telegram
-        print("hola7")
+
         return mensaje_ultima_query_arreglo[numero_de_funcion_query]
 
     else:
@@ -1165,11 +1169,15 @@ def consultar_numero_ultimas_transmisiones_maipu():
         mensaje_telegram = ("Hay " + str(len(datos)) + " datos en las ultimas transmisiones " +
                             " del terminal El Conquistador")
 
-        for row in datos:
+        print(mensaje_telegram)
+        datosOK = [[row[0], float(row[1]), float(row[2]), row[3], row[4], row[5], row[6],
+                    row[7], row[8], int(row[9]), int(row[10]), str(row[11])] for row in datos]
+
+        for row in datosOK:
             row[6] = dt.datetime.combine(row[5], (dt.datetime.min + row[6]).time())
 
-        datos = [row for row in datos if row[6] > ahora_delta]
-        mensaje_telegram = mensaje_telegram + ("\nDe estos registros, " + str(len(datos)) +
+        datosOK = [row for row in datosOK if row[6] > ahora_delta]
+        mensaje_telegram = mensaje_telegram + ("\nDe estos registros, " + str(len(datosOK)) +
                                                " corresponden a " + "transmisiones recientes")
 
         mensaje_ultima_query_arreglo[numero_de_funcion_query] = mensaje_telegram
