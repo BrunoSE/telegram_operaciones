@@ -1429,12 +1429,6 @@ def ayuda(bot, update):
                          text=("No tienes permiso para usar el bot, habla con alguien de " +
                                "la Gerencia de Operaciones y Estudios para pedir ayuda sobre " +
                                "cómo obtener acceso."))
-    if str(update.effective_user.id) in lista_acceso_dic:
-        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
-              lista_acceso_dic[str(update.effective_user.id)] + ": /ayuda"))
-    else:
-        print(("[" + dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " +
-              str(update.effective_user.id) + ": /ayuda"))
 
 
 def comandos(bot, update):
